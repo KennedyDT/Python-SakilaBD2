@@ -1,5 +1,5 @@
-from tkinder import *
-from tkinder import ttk
+from tkinter import *
+from tkinter import ttk
 import mariadb
 
 
@@ -29,7 +29,7 @@ def mostrarDatos(self) :
         print(nombre,clave)
 
 if __name__=="__main":
-    ventana = Th()
-    aplicacion = Alumno (ventana)
+    ventana = Tk()
+    aplicacion=Alumno(ventana)
     aplicacion.mostrarDatos()
     ventana.mainloop()
