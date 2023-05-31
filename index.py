@@ -18,10 +18,11 @@ class CustomerApp:
         self.button5 = Button(self.ventana, text="Auditoria", command=self.consulta5)
         self.button5.grid(row=1, column=1, padx=10, pady=10)
         self.button6 = Button(self.ventana, text="Modifica Nombre Cliente", command=self.consulta6)
+        self.button7 = Button(self.ventana, text="Verifica edad", command=self.consulta7)
 
         # Crear el Treeview para mostrar los resultados
         self.treeview = ttk.Treeview(self.ventana)
-        self.treeview.grid(row=2, columnspan=2, padx=10, pady=10)
+        self.treeview.grid(row=3, columnspan=2, padx=10, pady=10)
         # Posicionar los botones en la ventana
         self.button1.grid(row=0, column=0, padx=10, pady=10)
         self.button2.grid(row=0, column=1, padx=10, pady=10)
@@ -29,6 +30,7 @@ class CustomerApp:
         self.button4.grid(row=1, column=0, padx=10, pady=10)
         self.button5.grid(row=1, column=1, padx=10, pady=10)
         self.button6.grid(row=1, column=2, padx=10, pady=10)
+        self.button7.grid(row=2, column=1, padx=10, pady=10)
 
     def ejecutarConsulta(self, query):
         try:
@@ -151,6 +153,14 @@ class CustomerApp:
             self.ejecutarUpdate(query)
             # if results is not None:
             #     self.mostrarResultados(columns, results)
+    def consulta7(self):
+        id_consulta = self.obtenerIDConsulta(1)
+        if id_consulta is not None:
+            query = f"call get_customer_age({id_consulta}) "
+            columns, results = self.ejecutarConsulta(query)
+            if results is not None:
+                self.mostrarResultados(columns, results)    
+
 
     # def consulta6(self):
     #     query = "SELECT * FROM suppliers"

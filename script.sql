@@ -112,3 +112,25 @@ SELECT * FROM customer_audit
 de insertar un registro en la tabla "rental". El trigger puede verificar la edad del cliente
 basándose en la fecha de nacimiento proporcionada y asegurarse de que cumpla con los
 requisitos de edad para alquilar una película.*/
+
+use sakila;
+ALTER TABLE customer
+ADD age INT DEFAULT 0;
+select c.customer_id, count(*)  from customer c; 
+select * from customer c2 where age < 18;
+UPDATE customer
+SET age = FLOOR(RAND() * 71) + 10;
+
+/*En esta sentencia, multiplicamos el resultado de la función RAND() por 71 (el rango total de
+ *  valores entre 0 y 70) y luego sumamos 10 para obtener valores en el rango deseado entre 10 y 80 (ambos inclusive).*/
+
+create or replace procedure get_customer_age (in customerId INT)
+begin 
+	select c.customer_id  ,c.first_name ,c.last_name , c.age 
+	from customer as c
+	where c.customer_id = customerId; 
+end
+
+call get_customer_age(2);
+
+
