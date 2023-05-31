@@ -17,13 +17,11 @@ class CustomerApp:
         # Crear el botón 5
         self.button5 = Button(self.ventana, text="Auditoria", command=self.consulta5)
         self.button5.grid(row=1, column=1, padx=10, pady=10)
+        self.button6 = Button(self.ventana, text="Modifica Nombre Cliente", command=self.consulta6)
 
         # Crear el Treeview para mostrar los resultados
         self.treeview = ttk.Treeview(self.ventana)
         self.treeview.grid(row=2, columnspan=2, padx=10, pady=10)
-
-        self.button6 = Button(self.ventana, text="Edad", command=self.consulta6)
-
         # Posicionar los botones en la ventana
         self.button1.grid(row=0, column=0, padx=10, pady=10)
         self.button2.grid(row=0, column=1, padx=10, pady=10)
@@ -59,6 +57,8 @@ class CustomerApp:
         for i, column in enumerate(columns):
             self.treeview.heading(column, text=column)
 
+        
+
         # Obtener los resultados de la consulta
         results = cur.fetchall()
         for i, row in enumerate(results):
@@ -66,10 +66,41 @@ class CustomerApp:
 
         conn.close()
 
-    def obtenerIDConsulta(self):
-        id_consulta = simpledialog.askinteger("ID de consulta", "Ingrese el ID a consultar:")
-        return id_consulta
+    def ejecutarUpdate(self, query):
+        try:
+            conn = mariadb.connect(
+                host="localhost",
+                user="root",
+                password="",  # Aquí debes proporcionar la contraseña correcta si es necesario
+                database="sakila"
+            )
+        except mariadb.Error as e:
+            print("Error al conectar a la base de datos", e)
+            return
 
+        cur = conn.cursor()
+        cur.execute(query)
+
+        conn.commit()  # Guardar los cambios realizados en la base de datos
+
+        conn.close()
+
+
+    # def obtenerIDConsulta(self):
+    #     id_consulta = simpledialog.askinteger("ID de consulta", "Ingrese el ID a consultar:")
+    #     return id_consulta
+    def obtenerIDConsulta(self, num=0):
+        if num == 0:
+            id_consulta = simpledialog.askinteger("ID de consulta", "Ingrese el ID a consultar:")
+        elif num == 1:
+            id_consulta = simpledialog.askinteger("Top Películas", "Ingrese el Top a consultar:")
+        elif num == 2:
+            # Evaluación de otra condición
+            id_consulta = simpledialog.askinteger("Modificar Nombre Cliente", "Ingrese el ID a Modificar:")
+        else:
+            id_consulta = None  # Valor predeterminado si num no coincide con ninguna condición
+
+        return id_consulta
     def consulta1(self):
         id_consulta = self.obtenerIDConsulta()
         if id_consulta is not None:
@@ -87,29 +118,43 @@ class CustomerApp:
                 self.mostrarResultados(columns, results)
 
     def consulta3(self):
-        id_consulta = self.obtenerIDConsulta()
+        id_consulta = self.obtenerIDConsulta(1)
         if id_consulta is not None:
             query = f"call get_populary_films({id_consulta}) "
             columns, results = self.ejecutarConsulta(query)
             if results is not None:
                 self.mostrarResultados(columns, results)
-
+#ID de película para consultar si está disponible
     def consulta4(self):
         id_consulta = self.obtenerIDConsulta()
         if id_consulta is not None:
             query = f"call get_film_available({id_consulta}) "
             columns, results = self.ejecutarConsulta(query)
             if results is not None:
+                # if len(results) == 0:
+                #     self.mostrarResultados(['Resultado'], [('Película No disponible')])
+                # else:
+                #     self.mostrarResultados(columns, results)
                 self.mostrarResultados(columns, results)
 
-    
+
+    #Muestra Tabla Auditoría
     def consulta5(self):
         query = "SELECT * FROM customer_audit"
         self.ejecutarConsulta(query)
-
+    #Modifica tabla nombre de customer
     def consulta6(self):
-        query = "SELECT * FROM suppliers"
-        self.ejecutarConsulta(query)
+        id_customer = self.obtenerIDConsulta(2)
+        new_cName=simpledialog.askstring("Actualiza Nombre", "Ingrese el nuevo nombre:")
+        if id_customer is not None:
+            query = f"UPDATE `customer` SET `first_name`='{new_cName}' WHERE `customer_id`={id_customer} "
+            self.ejecutarUpdate(query)
+            # if results is not None:
+            #     self.mostrarResultados(columns, results)
+
+    # def consulta6(self):
+    #     query = "SELECT * FROM suppliers"
+    #     self.ejecutarConsulta(query)
 
 if __name__ == "__main__":
     ventana = Tk()
